@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { paginate } from '../utils/paginate'
-import Pagination from './pagination'
-import api from '../api'
-import GroupList from './groupList'
-import SearchStatus from './searchStatus'
-import UserTable from './usersTable'
-import SearchField from './searchField'
+import { paginate } from '../../../utils/paginate'
+import Pagination from '../../common/pagination'
+import GroupList from '../../common/groupList'
+import SearchStatus from '../../ui/searchStatus'
+import UserTable from '../../ui/usersTable'
+import SearchField from '../../common/form/searchField'
 import _ from 'lodash'
+import api from '../../../api'
 
-const UsersList = () => {
+const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [professions, setProfession] = useState()
     const [selectedProf, setSelectedProf] = useState()
     const [sortBy, setSortBy] = useState({ path: 'name', order: 'asc' })
+    const [searchQuery, setSearchQuery] = useState('')
     const pageSize = 8
-    const textInput = React.createRef()
 
     const [users, setUsers] = useState()
     useEffect(() => {
@@ -34,16 +34,16 @@ const UsersList = () => {
         })
         setUsers(newArray)
     }
-
     useEffect(() => {
         api.professions.fetchAll().then(data => setProfession(data))
     }, [])
 
     useEffect(() => {
         setCurrentPage(1)
-    }, [selectedProf])
+    }, [selectedProf, searchQuery])
 
     const handleProfessionSelect = item => {
+        if (searchQuery !== '') setSearchQuery('')
         setSelectedProf(item)
     }
 
@@ -54,27 +54,26 @@ const UsersList = () => {
         setSortBy(item)
     }
 
-    const [data, setData] = useState('')
-    const handleChange = e => {
-        setData(e.target.value.toLowerCase())
-    }
-    const searchClear = () => {
-        textInput.current.value = ''
-        setData('')
+    const handleSearchQuery = ({ target }) => {
+        setSelectedProf(undefined)
+        setSearchQuery(target.value)
     }
 
     if (users) {
-        const filterUser = users.filter(user => {
-            return user.name.toLowerCase().includes(data.toLowerCase())
-        })
-
-        const filteredUsers = selectedProf
+        const filteredUsers = searchQuery
             ? users.filter(
-                user =>
-                    JSON.stringify(user.profession) ===
-                    JSON.stringify(selectedProf)
-            )
-            : users && filterUser
+                  user =>
+                      user.name
+                          .toLowerCase()
+                          .indexOf(searchQuery.toLowerCase()) !== -1
+              )
+            : selectedProf
+            ? users.filter(
+                  user =>
+                      JSON.stringify(user.profession) ===
+                      JSON.stringify(selectedProf)
+              )
+            : users
 
         const count = filteredUsers.length
         const sortedUsers = _.orderBy(
@@ -99,7 +98,6 @@ const UsersList = () => {
                             className="btn btn-secondary mt-2"
                             onClick={() => {
                                 clearFilter()
-                                searchClear()
                             }}
                         >
                             Очиститть
@@ -109,13 +107,8 @@ const UsersList = () => {
                 <div className="d-flex flex-column">
                     <SearchStatus length={count} />
                     <SearchField
-                        data={data}
-                        onchange={handleChange}
-                        onclick={() => {
-                            searchClear()
-                            clearFilter()
-                        }}
-                        textInput={textInput}
+                        onChange={handleSearchQuery}
+                        value={searchQuery}
                     />
                     {count > 0 && (
                         <UserTable
@@ -140,8 +133,8 @@ const UsersList = () => {
     }
     return 'loading...'
 }
-UsersList.propTypes = {
+UsersListPage.propTypes = {
     users: PropTypes.array
 }
 
-export default UsersList
+export default UsersListPage

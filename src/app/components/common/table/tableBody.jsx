@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import { Switch, Route } from 'react-router-dom'
-import UserPage from './userPage'
+import UserPage from '../../page/userPage/userPage'
 
 const TableBody = ({ data, columns }) => {
     const renderContent = (item, column) => {
