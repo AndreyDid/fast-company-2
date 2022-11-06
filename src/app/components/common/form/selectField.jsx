@@ -30,7 +30,6 @@ const SelectField = ({
                 id={name}
                 name={name}
                 value={value}
-                name="profession"
                 onChange={handleChange}
             >
                 <option disabled value="">

@@ -19,7 +19,7 @@ const SearchStatus = ({ length }) => {
         <>
             <div
                 className={
-                    'fs-1 m-1 badge ' +
+                    'fs-1 m-1 mt-3 badge ' +
                     (length > 0 ? 'bg-primary' : 'bg-danger')
                 }
             >

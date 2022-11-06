@@ -92,7 +92,7 @@ const RegisterForm = () => {
         const isValid = validate()
         if (!isValid) return
         const { profession, qualities } = data
-        console.log({
+        console.log('Submit', {
             ...data,
             profession: getProfessionById(profession),
             qualities: getQualities(qualities)
@@ -121,7 +121,7 @@ const RegisterForm = () => {
         }
         return qualitiesArray
     }
-
+    console.log('data', data)
     return (
         <form onSubmit={handleSubmit}>
             <TextField
