@@ -5,14 +5,14 @@ import api from '../../../api'
 import { useHistory, useParams } from 'react-router-dom'
 import SelectField from '../../common/form/selectField'
 import TextField from '../../common/form/textField'
-import { update } from '../../../api/fake.api/user.api'
 import { validator } from '../../../utils/validator'
 
 const EditPage = () => {
     const params = useParams()
     const { userId } = params
     const history = useHistory()
-    const [data, setData] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [data, setData] = useState({})
     const [qualities, setQualities] = useState([])
     const [professions, setProfession] = useState([])
     const [errors, setErrors] = useState({})
@@ -24,6 +24,11 @@ const EditPage = () => {
             },
             isEmail: {
                 message: 'Email введен не корректно'
+            }
+        },
+        name: {
+            isRequired: {
+                message: 'Введите ваше имя'
             }
         }
     }
@@ -39,6 +44,7 @@ const EditPage = () => {
     const isValid = Object.keys(errors).length === 0
 
     useEffect(() => {
+        setIsLoading(true)
         api.users.getById(userId).then(data =>
             setData(prevState => ({
                 ...prevState,
@@ -51,9 +57,6 @@ const EditPage = () => {
                 }))
             }))
         )
-    }, [])
-
-    useEffect(() => {
         api.professions.fetchAll().then(data => {
             const professionsList = Object.keys(data).map(professionName => ({
                 label: data[professionName].name,
@@ -70,6 +73,10 @@ const EditPage = () => {
             setQualities(qualitiesList)
         })
     }, [])
+
+    useEffect(() => {
+        if (data._id) setIsLoading(false)
+    }, [data])
 
     const handleChange = target => {
         setData(prevState => ({ ...prevState, [target.name]: target.value }))
@@ -98,19 +105,19 @@ const EditPage = () => {
         return qualitiesArray
     }
 
-    const jumpUserPage = () => {
-        history.push(`/users/${userId}`)
-    }
     const handleSubmit = e => {
-        jumpUserPage()
         e.preventDefault()
+        const isValid = validate()
+        if (!isValid) return
         const { profession, qualities } = data
+        api.users
+            .update(userId, {
+                ...data,
+                profession: getProfessionById(profession),
+                qualities: getQualities(qualities)
+            })
+            .then(data => history.push(`/users/${data._id}`))
         console.log('Submit', {
-            ...data,
-            profession: getProfessionById(profession),
-            qualities: getQualities(qualities)
-        })
-        update(userId, {
             ...data,
             profession: getProfessionById(profession),
             qualities: getQualities(qualities)
@@ -118,61 +125,67 @@ const EditPage = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div className="container mt-5">
-                <div className="row">
-                    <div className="col-md-6 offset-md-3 shadow p-4">
-                        <TextField
-                            label="Имя"
-                            name="name"
-                            value={data.name}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            label="Электронная почта"
-                            name="email"
-                            value={data.email}
-                            onChange={handleChange}
-                            error={errors.email}
-                        />
-                        <SelectField
-                            label="Выбери свою профессию"
-                            defaultOption="Choose..."
-                            name="profession"
-                            options={professions}
-                            onChange={handleChange}
-                            value={data.profession}
-                        />
-                        <RadioField
-                            options={[
-                                { name: 'Male', value: 'male' },
-                                { name: 'Female', value: 'female' },
-                                { name: 'Other', value: 'other' }
-                            ]}
-                            value={data.sex}
-                            name="sex"
-                            onChange={handleChange}
-                            label="Выберите ваш пол"
-                        />
+        <div className="container mt-5">
+            <div className="row">
+                <div className="col-md-6 offset-md-3 shadow p-4">
+                    {!isLoading && Object.keys(professions).length > 0 ? (
+                        <form onSubmit={handleSubmit}>
+                            <TextField
+                                label="Имя"
+                                name="name"
+                                value={data.name}
+                                onChange={handleChange}
+                                error={errors.name}
+                            />
+                            <TextField
+                                label="Электронная почта"
+                                name="email"
+                                value={data.email}
+                                onChange={handleChange}
+                                error={errors.email}
+                            />
+                            <SelectField
+                                label="Выбери свою профессию"
+                                defaultOption="Choose..."
+                                name="profession"
+                                options={professions}
+                                onChange={handleChange}
+                                value={data.profession}
+                                error={errors.profession}
+                            />
+                            <RadioField
+                                options={[
+                                    { name: 'Male', value: 'male' },
+                                    { name: 'Female', value: 'female' },
+                                    { name: 'Other', value: 'other' }
+                                ]}
+                                value={data.sex}
+                                name="sex"
+                                onChange={handleChange}
+                                label="Выберите ваш пол"
+                            />
 
-                        <MultiSelectField
-                            options={qualities}
-                            onChange={handleChange}
-                            defaultValue={data.qualities}
-                            name="qualities"
-                            label="Выберите ваши качества"
-                        />
-                        <button
-                            type="submit"
-                            className="btn btn-primary w-100 mx-auto"
-                            disabled={!isValid}
-                        >
-                            Обновить
-                        </button>
-                    </div>
+                            <MultiSelectField
+                                options={qualities}
+                                onChange={handleChange}
+                                defaultValue={data.qualities}
+                                name="qualities"
+                                label="Выберите ваши качества"
+                            />
+                            <button
+                                type="submit"
+                                className="btn btn-primary w-100 mx-auto"
+                                disabled={!isValid}
+                            >
+                                Обновить
+                            </button>
+                        </form>
+                    ) : (
+                        'Loading...'
+                    )}
                 </div>
             </div>
-        </form>
+        </div>
     )
 }
 
