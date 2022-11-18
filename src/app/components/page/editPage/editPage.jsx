@@ -6,6 +6,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import SelectField from '../../common/form/selectField'
 import TextField from '../../common/form/textField'
 import { validator } from '../../../utils/validator'
+import BackHistoryButton from '../../common/form/backButton'
 
 const EditPage = () => {
     const params = useParams()
@@ -126,6 +127,7 @@ const EditPage = () => {
 
     return (
         <div className="container mt-5">
+            <BackHistoryButton />
             <div className="row">
                 <div className="col-md-6 offset-md-3 shadow p-4">
                     {!isLoading && Object.keys(professions).length > 0 ? (
