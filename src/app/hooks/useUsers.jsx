@@ -22,6 +22,7 @@ const UserProvider = ({ children }) => {
             setError(null)
         }
     }, [error])
+
     async function getUsers() {
         try {
             const { content } = await userService.get()
@@ -31,10 +32,12 @@ const UserProvider = ({ children }) => {
             errorCatcher(error)
         }
     }
+
     function errorCatcher(error) {
         const { message } = error.response.data
         setError(message)
     }
+
     return (
         <UserContext.Provider value={{ users }}>
             {!isLoading ? children : 'Loading...'}

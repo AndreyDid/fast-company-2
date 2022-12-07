@@ -13,7 +13,10 @@ export const QualitiesProvider = ({ children }) => {
     const [isLoading, setLoading] = useState(true)
     const [qualities, setQualities] = useState([])
     const [error, setError] = useState(null)
-    console.log('qualities', qualities)
+    function errorCatcher(error) {
+        const { message } = error.response.data
+        setError(message)
+    }
     useEffect(() => {
         if (error !== null) {
             toast(error)
@@ -24,11 +27,6 @@ export const QualitiesProvider = ({ children }) => {
     useEffect(() => {
         getQualitiesList()
     }, [])
-
-    function errorCatcher(error) {
-        const { message } = error.response.data
-        setError(message)
-    }
 
     function getQualities(id) {
         return qualities.find(q => q._id === id)

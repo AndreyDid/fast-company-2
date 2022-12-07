@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
-import { paginate } from '../../../utils/paginate'
+import {paginate} from '../../../utils/paginate'
 import Pagination from '../../common/pagination'
 import GroupList from '../../common/groupList'
 import SearchStatus from '../../ui/searchStatus'
 import UserTable from '../../ui/usersTable'
 import SearchField from '../../common/form/searchField'
-import { useUser } from '../../../hooks/useUsers'
+import {useUser} from '../../../hooks/useUsers'
 import _ from 'lodash'
 import api from '../../../api'
 
@@ -14,12 +14,11 @@ const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [professions, setProfession] = useState()
     const [selectedProf, setSelectedProf] = useState()
-    const [sortBy, setSortBy] = useState({ path: 'name', order: 'asc' })
+    const [sortBy, setSortBy] = useState({path: 'name', order: 'asc'})
     const [searchQuery, setSearchQuery] = useState('')
     const pageSize = 8
 
-    const { users } = useUser()
-    console.log(users)
+    const {users} = useUser()
 
     const handleDelete = userId => {
         // setUsers(users.filter(user => user._id !== userId))
@@ -28,7 +27,7 @@ const UsersListPage = () => {
     const handleToggleBookMark = id => {
         const newArray = users.map(user => {
             if (user._id === id) {
-                return { ...user, bookmark: !user.bookmark }
+                return {...user, bookmark: !user.bookmark}
             }
             return user
         })
@@ -55,7 +54,7 @@ const UsersListPage = () => {
         setSortBy(item)
     }
 
-    const handleSearchQuery = ({ target }) => {
+    const handleSearchQuery = ({target}) => {
         setSelectedProf(undefined)
         setSearchQuery(target.value)
     }
@@ -63,18 +62,18 @@ const UsersListPage = () => {
     if (users) {
         const filteredUsers = searchQuery
             ? users.filter(
-                  user =>
-                      user.name
-                          .toLowerCase()
-                          .indexOf(searchQuery.toLowerCase()) !== -1
-              )
+                user =>
+                    user.name
+                        .toLowerCase()
+                        .indexOf(searchQuery.toLowerCase()) !== -1
+            )
             : selectedProf
-            ? users.filter(
-                  user =>
-                      JSON.stringify(user.profession) ===
-                      JSON.stringify(selectedProf)
-              )
-            : users
+                ? users.filter(
+                    user =>
+                        JSON.stringify(user.profession) ===
+                        JSON.stringify(selectedProf)
+                )
+                : users
 
         const count = filteredUsers.length
         const sortedUsers = _.orderBy(
@@ -106,7 +105,7 @@ const UsersListPage = () => {
                     </div>
                 )}
                 <div className="d-flex flex-column">
-                    <SearchStatus length={count} />
+                    <SearchStatus length={count}/>
                     <SearchField
                         onChange={handleSearchQuery}
                         value={searchQuery}
