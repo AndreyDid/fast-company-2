@@ -15,7 +15,7 @@ export const useAuth = () => {
 const AuthProvider = ({ children }) => {
     const [currentUser, setUser] = useState({})
     const [error, setError] = useState(null)
-
+    let errorObject = ''
     async function signUp({ email, password, ...rest }) {
         const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_KEY}`
         try {
@@ -26,19 +26,47 @@ const AuthProvider = ({ children }) => {
             })
             setTokens(data)
             await createUser({ _id: data.localId, email, ...rest })
-            console.log(data)
         } catch (error) {
             errorCatcher(error)
             const { code, message } = error.response.data.error
             if (code === 400) {
                 if (message === 'EMAIL_EXISTS') {
-                    const errorObject = {
+                    errorObject = {
                         email: 'Пользователь с таким Email уже существует'
                     }
                     throw errorObject
                 }
             }
             // throw new Error
+        }
+    }
+
+    async function signIn({ email, password }) {
+        const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_FIREBASE_KEY}`
+        try {
+            const { data } = await httpAuth.post(url, {
+                email,
+                password,
+                returnSecureToken: true
+            })
+            setTokens(data)
+        } catch (error) {
+            errorCatcher(error)
+            const { code, message } = error.response.data.error
+            if (code === 400) {
+                if (message === 'EMAIL_NOT_FOUND') {
+                    errorObject = {
+                        email: 'Пользователь с таким Email не найден'
+                    }
+                    throw errorObject
+                }
+                if (message === 'INVALID_PASSWORD') {
+                    errorObject = {
+                        password: 'Пароль указан не верно'
+                    }
+                    throw errorObject
+                }
+            }
         }
     }
 
@@ -64,7 +92,7 @@ const AuthProvider = ({ children }) => {
     }, [error])
 
     return (
-        <AuthContext.Provider value={{ signUp, currentUser }}>
+        <AuthContext.Provider value={{ signUp, signIn, currentUser }}>
             {children}
         </AuthContext.Provider>
     )
