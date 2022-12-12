@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify'
 import configFile from '../config.json'
 
 const http = axios.create({
@@ -23,15 +23,15 @@ http.interceptors.request.use(
 function transformData(data) {
     return data
         ? Object.keys(data).map(key => ({
-            ...data[key]
-        }))
+              ...data[key]
+          }))
         : []
 }
 
 http.interceptors.response.use(
     res => {
         if (configFile.isFireBase) {
-            res.data = {content: transformData(res.data)}
+            res.data = { content: transformData(res.data) }
         }
         return res
     },
