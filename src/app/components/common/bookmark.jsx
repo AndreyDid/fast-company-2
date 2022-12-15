@@ -6,16 +6,14 @@ const BookMark = ({ status, ...rest }) => {
         <div>
             <button {...rest}>
                 <i
-                    className={
-                        status ? 'bi bi-bookmark-check-fill' : 'bi bi-bookmark'
-                    }
+                    className={'bi bi-bookmark' + (status ? '-check-fill' : '')}
                 ></i>
             </button>
         </div>
     )
 }
 BookMark.propTypes = {
-    status: PropTypes.bool.isRequired
+    status: PropTypes.bool
 }
 
 export default BookMark

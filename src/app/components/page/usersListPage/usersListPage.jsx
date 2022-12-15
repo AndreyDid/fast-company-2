@@ -7,18 +7,19 @@ import SearchStatus from '../../ui/searchStatus'
 import UserTable from '../../ui/usersTable'
 import SearchField from '../../common/form/searchField'
 import {useUser} from '../../../hooks/useUsers'
+import {useProfessions} from '../../../hooks/useProfession'
 import _ from 'lodash'
-import api from '../../../api'
+import {useAuth} from '../../../hooks/useAuth'
 
 const UsersListPage = () => {
+    const {users} = useUser()
+    const {currentUser} = useAuth()
+    const {isLoading: professionsLoading, professions} = useProfessions()
     const [currentPage, setCurrentPage] = useState(1)
-    const [professions, setProfession] = useState()
     const [selectedProf, setSelectedProf] = useState()
     const [sortBy, setSortBy] = useState({path: 'name', order: 'asc'})
     const [searchQuery, setSearchQuery] = useState('')
     const pageSize = 8
-
-    const {users} = useUser()
 
     const handleDelete = userId => {
         // setUsers(users.filter(user => user._id !== userId))
@@ -34,9 +35,6 @@ const UsersListPage = () => {
         // setUsers(newArray)
         console.log(newArray)
     }
-    useEffect(() => {
-        api.professions.fetchAll().then(data => setProfession(data))
-    }, [])
 
     useEffect(() => {
         setCurrentPage(1)
@@ -60,21 +58,25 @@ const UsersListPage = () => {
     }
 
     if (users) {
-        const filteredUsers = searchQuery
-            ? users.filter(
-                user =>
-                    user.name
-                        .toLowerCase()
-                        .indexOf(searchQuery.toLowerCase()) !== -1
-            )
-            : selectedProf
-                ? users.filter(
+        function filterUsers(data) {
+            const filteredUsers = searchQuery
+                ? data.filter(
                     user =>
-                        JSON.stringify(user.profession) ===
-                        JSON.stringify(selectedProf)
+                        user.name
+                            .toLowerCase()
+                            .indexOf(searchQuery.toLowerCase()) !== -1
                 )
-                : users
+                : selectedProf
+                    ? data.filter(
+                        user =>
+                            JSON.stringify(user.profession) ===
+                            JSON.stringify(selectedProf)
+                    )
+                    : data
+            return filteredUsers.filter(u => u._id !== currentUser._id)
+        }
 
+        const filteredUsers = filterUsers(users)
         const count = filteredUsers.length
         const sortedUsers = _.orderBy(
             filteredUsers,
@@ -87,7 +89,7 @@ const UsersListPage = () => {
         }
         return (
             <div className="d-flex">
-                {professions && (
+                {professions && !professionsLoading && (
                     <div className="d-flex flex-column flex-shrink-0 p-3">
                         <GroupList
                             selectedItem={selectedProf}
