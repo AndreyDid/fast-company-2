@@ -9,7 +9,7 @@ import { ToastContainer } from 'react-toastify'
 import { ProfessionProvider } from './hooks/useProfession'
 import { QualitiesProvider } from './hooks/useQualities'
 import AuthProvider from './hooks/useAuth'
-import ProtectedRoute from './components/common/comments/protectedRoute'
+import ProtectedRoute from './components/common/protectedRoute'
 import LogOut from './layouts/logOut'
 
 function App() {

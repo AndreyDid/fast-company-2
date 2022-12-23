@@ -55,7 +55,6 @@ GroupList.propTypes = {
     contentProperty: PropTypes.string.isRequired,
     onItemSelect: PropTypes.func,
     selectedItem: PropTypes.object,
-    searchClear: PropTypes.func
 }
 
 export default GroupList

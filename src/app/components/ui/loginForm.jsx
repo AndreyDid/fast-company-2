@@ -37,7 +37,6 @@ const LoginForm = () => {
         return Object.keys(errors).length === 0
     }
     const isValid = Object.keys(errors).length === 0
-
     const handleSubmit = async e => {
         e.preventDefault()
         const isValid = validate()
@@ -47,7 +46,7 @@ const LoginForm = () => {
             history.push(
                 history.location.state
                     ? history.location.state.from.pathname
-                    : '/'
+                    : '/edit'
             )
         } catch (error) {
             setEnterError(error.message)

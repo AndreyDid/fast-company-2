@@ -23,7 +23,6 @@ export const CommentsProvider = ({ children }) => {
         getComments()
     }, [userId])
     async function createComment(data) {
-        console.log(data)
         const comment = {
             ...data,
             _id: nanoid(),

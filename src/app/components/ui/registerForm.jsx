@@ -24,7 +24,10 @@ const RegisterForm = () => {
     const { signUp } = useAuth()
     const [errors, setErrors] = useState({})
     const { qualities } = useQualities()
-    const qualitiesList = qualities.map(q => ({ label: q.name, value: q._id }))
+    const qualitiesList = qualities.map(q => ({
+        label: q.name,
+        value: q._id
+    }))
     const { professions } = useProfessions()
     const professionsList = professions.map(p => ({
         label: p.name,
