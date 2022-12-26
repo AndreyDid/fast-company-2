@@ -1,12 +1,5 @@
-const professionEndPoint = 'profession/'
-const qualityEndPoint = 'quality/'
-const userEndPoint = 'user/'
-const commentEndPoint = 'comment/'
+export const professionEndPoint = 'profession/'
+export const qualityEndPoint = 'quality/'
+export const userEndPoint = 'user/'
+export const commentEndPoint = 'comment/'
 
-const endPoints = {
-    professionEndPoint,
-    qualityEndPoint,
-    userEndPoint,
-    commentEndPoint
-}
-export default endPoints
