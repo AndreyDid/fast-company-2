@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { toast } from 'react-toastify'
+import {toast} from 'react-toastify'
 import configFile from '../config.json'
-import { httpAuth } from '../hooks/useAuth'
+import {httpAuth} from '../hooks/useAuth'
 import localStorageService from './localStorage.service'
 
 const http = axios.create({
@@ -17,7 +17,7 @@ http.interceptors.request.use(
             const expiresDate = localStorageService.getTokenExpiresDate()
             const refreshToken = localStorageService.getRefreshToken()
             if (refreshToken && expiresDate < Date.now()) {
-                const { data } = await httpAuth.post('token', {
+                const {data} = await httpAuth.post('token', {
                     grand_type: 'refresh_token',
                     refresh_token: refreshToken
                 })
@@ -30,7 +30,7 @@ http.interceptors.request.use(
             }
             const accessToken = localStorageService.getAccessToken()
             if (accessToken) {
-                config.params = { ...config.params, auth: accessToken }
+                config.params = {...config.params, auth: accessToken}
             }
         }
         return config
@@ -43,15 +43,15 @@ http.interceptors.request.use(
 function transformData(data) {
     return data && !data._id
         ? Object.keys(data).map(key => ({
-              ...data[key]
-          }))
+            ...data[key]
+        }))
         : data
 }
 
 http.interceptors.response.use(
     res => {
         if (configFile.isFireBase) {
-            res.data = { content: transformData(res.data) }
+            res.data = {content: transformData(res.data)}
         }
         return res
     },
