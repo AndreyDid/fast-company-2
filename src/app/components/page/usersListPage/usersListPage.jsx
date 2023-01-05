@@ -6,15 +6,17 @@ import GroupList from '../../common/groupList'
 import SearchStatus from '../../ui/searchStatus'
 import UserTable from '../../ui/usersTable'
 import SearchField from '../../common/form/searchField'
-import {useUser} from '../../../hooks/useUsers'
-import {useProfessions} from '../../../hooks/useProfession'
 import _ from 'lodash'
-import {useAuth} from '../../../hooks/useAuth'
+import {useSelector} from 'react-redux'
+import {getProfessions} from '../../../store/professions'
+import {getQualitiesLoadingStatus} from '../../../store/qualities'
+import {getCurrentUserId, getUsersList} from '../../../store/users'
 
 const UsersListPage = () => {
-    const {users} = useUser()
-    const {currentUser} = useAuth()
-    const {isLoading: professionsLoading, professions} = useProfessions()
+    const users = useSelector(getUsersList())
+    const currentUserId = useSelector(getCurrentUserId())
+    const professions = useSelector(getProfessions())
+    const professionsLoading = useSelector(getQualitiesLoadingStatus())
     const [currentPage, setCurrentPage] = useState(1)
     const [selectedProf, setSelectedProf] = useState()
     const [sortBy, setSortBy] = useState({path: 'name', order: 'asc'})
@@ -70,10 +72,10 @@ const UsersListPage = () => {
                     ? data.filter(
                         user =>
                             JSON.stringify(user.profession) ===
-                            JSON.stringify(selectedProf)
+                            JSON.stringify(selectedProf._id)
                     )
                     : data
-            return filteredUsers.filter(u => u._id !== currentUser._id)
+            return filteredUsers.filter(u => u._id !== currentUserId)
         }
 
         const filteredUsers = filterUsers(users)

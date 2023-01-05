@@ -1,5 +1,5 @@
 import httpService from './http.service'
-import {commentEndPoint} from '../../endpoints'
+import { commentEndPoint } from '../../endpoints'
 
 const commentService = {
     createComment: async payload => {
@@ -19,9 +19,7 @@ const commentService = {
         return data
     },
     removeComments: async commentId => {
-        const { data } = await httpService.delete(
-            commentEndPoint + commentId
-        )
+        const { data } = await httpService.delete(commentEndPoint + commentId)
         return data
     }
 }

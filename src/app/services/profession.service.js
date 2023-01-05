@@ -1,5 +1,5 @@
 import httpService from './http.service'
-import {professionEndPoint} from '../../endpoints'
+import { professionEndPoint } from '../../endpoints'
 
 const professionService = {
     get: async () => {

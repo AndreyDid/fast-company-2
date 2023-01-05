@@ -1,28 +1,36 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import RadioField from '../../common/form/radioField'
 import MultiSelectField from '../../common/form/multiSelectField'
 import SelectField from '../../common/form/selectField'
 import TextField from '../../common/form/textField'
-import {validator} from '../../../utils/validator'
 import BackHistoryButton from '../../common/backButton'
-import {useQualities} from '../../../hooks/useQualities'
-import {useProfessions} from '../../../hooks/useProfession'
-import {useAuth} from '../../../hooks/useAuth'
-import {useHistory} from 'react-router-dom'
+import { validator } from '../../../utils/validator'
+import { useDispatch, useSelector } from 'react-redux'
+import { getCurrentUserData, updateUser } from '../../../store/users'
+import {
+    getQualities,
+    getQualitiesLoadingStatus
+} from '../../../store/qualities'
+import {
+    getProfessions,
+    getProfessionsLoadingStatus
+} from '../../../store/professions'
 
 const EditPage = () => {
-    const {currentUser, updateUserData} = useAuth()
-    const history = useHistory()
+    const dispatch = useDispatch()
+    const currentUser = useSelector(getCurrentUserData())
     const [isLoading, setIsLoading] = useState(true)
     const [data, setData] = useState()
     const [errors, setErrors] = useState({})
 
-    const {qualities, isLoading: qualitiesLoading} = useQualities()
+    const qualities = useSelector(getQualities())
+    const qualitiesLoading = useSelector(getQualitiesLoadingStatus())
     const qualitiesList = qualities.map(q => ({
         label: q.name,
         value: q._id
     }))
-    const {professions, isLoading: professionLoading} = useProfessions()
+    const professions = useSelector(getProfessions())
+    const professionLoading = useSelector(getProfessionsLoadingStatus())
     const professionsList = professions.map(p => ({
         label: p.name,
         value: p._id
@@ -67,8 +75,8 @@ const EditPage = () => {
         return qualitiesArray
     }
 
-    const transformData = (data) => {
-        const result = getQualitiesListByIds(data).map((qual) => ({
+    const transformData = data => {
+        const result = getQualitiesListByIds(data).map(qual => ({
             label: qual.name,
             value: qual._id
         }))
@@ -90,27 +98,27 @@ const EditPage = () => {
     }, [data])
 
     const handleChange = target => {
-        setData(prevState => ({...prevState, [target.name]: target.value}))
+        setData(prevState => ({ ...prevState, [target.name]: target.value }))
     }
 
     const handleSubmit = async e => {
         e.preventDefault()
         const isValid = validate()
         if (!isValid) return
-        await updateUserData({
-            ...data,
-            qualities: data.qualities.map((q) => q.value)
-        })
-
-        history.push(`/users/${currentUser._id}`)
+        dispatch(
+            updateUser({
+                ...data,
+                qualities: data.qualities.map(q => q.value)
+            })
+        )
     }
 
     return (
         <div className="container mt-5">
-            <BackHistoryButton/>
+            <BackHistoryButton />
             <div className="row">
                 <div className="col-md-6 offset-md-3 shadow p-4">
-                    {!isLoading ? (
+                    {!isLoading && Object.keys(professions).length > 0 ? (
                         <form onSubmit={handleSubmit}>
                             <TextField
                                 label="Имя"
@@ -137,9 +145,9 @@ const EditPage = () => {
                             />
                             <RadioField
                                 options={[
-                                    {name: 'Male', value: 'male'},
-                                    {name: 'Female', value: 'female'},
-                                    {name: 'Other', value: 'other'}
+                                    { name: 'Male', value: 'male' },
+                                    { name: 'Female', value: 'female' },
+                                    { name: 'Other', value: 'other' }
                                 ]}
                                 value={data.sex}
                                 name="sex"
